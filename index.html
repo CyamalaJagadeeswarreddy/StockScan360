@@ -8,7 +8,7 @@
     <!-- Import Libraries -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <!-- ADDED: Chart.js for Analytics Dashboard -->
+    <!-- Chart.js for Analytics Dashboard -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -63,7 +63,7 @@
                 </form>
             </section>
 
-            <!-- ADDED: ANALYTICS DASHBOARD SECTION -->
+            <!-- ANALYTICS DASHBOARD SECTION -->
             <section class="analytics-section">
                 <h2>📊 Analytics Dashboard</h2>
                 <div class="dashboard-container">
@@ -82,7 +82,10 @@
                 <h2>📋 Current Inventory</h2>
                 <div class="list-controls">
                     <input type="text" id="search-input" placeholder="Search by name or barcode...">
-                    <button id="clear-data-btn" class="btn btn-warning">Clear All Data</button>
+                    <div>
+                        <button onclick="exportToCSV()" class="btn btn-primary" style="margin-right: 5px;">Export to Excel</button>
+                        <button id="clear-data-btn" class="btn btn-warning">Clear All Data</button>
+                    </div>
                 </div>
                 <table id="inventory-table">
                     <thead>

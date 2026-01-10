@@ -257,4 +257,27 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveInventory() {
         localStorage.setItem('stockScan360Inventory', JSON.stringify(inventory));
     }
-});
+// --- NEW FUNCTION: Export to CSV ---
+function exportToCSV() {
+    // 1. Create the CSV headers
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += "Barcode,Name,Category,Quantity,Price\n";
+
+    // 2. Loop through inventory and create rows
+    inventory.forEach(item => {
+        // We wrap text in quotes "..." in case a name has a comma (e.g., "Wireless, Mouse")
+        const row = `"${item.barcode}","${item.name}","${item.category}",${item.quantity},${item.price}`;
+        csvContent += row + "\n";
+    });
+
+    // 3. Create a temporary link to trigger download
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "stockscan360_inventory.csv");
+    
+    // 4. Trigger the download
+    document.body.appendChild(link); // Required for Firefox
+    link.click();
+    document.body.removeChild(link);
+}});
