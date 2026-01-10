@@ -1,0 +1,49 @@
+/* Basic Reset and Layout */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px; }
+
+.container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+section { margin-bottom: 30px; padding: 20px; background: #f9f9f9; border-radius: 5px; }
+h2 { margin-bottom: 15px; color: #2c3e50; }
+
+/* Scanner Styles */
+.qr-reader { width: 100%; max-width: 500px; margin: 0 auto 20px; min-height: 250px; background: #000; border-radius: 5px; }
+.scan-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+.scan-result { padding: 10px; background: #e8f5e9; border-left: 4px solid #4caf50; margin-top: 15px; display: none; }
+
+/* Form Styles */
+.form-group { margin-bottom: 15px; }
+label { display: block; margin-bottom: 5px; font-weight: 600; }
+input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+
+/* Button Styles */
+.btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 600; transition: background 0.3s; }
+.btn-primary { background: #2196F3; color: white; }
+.btn-danger { background: #f44336; color: white; }
+.btn-success { background: #4CAF50; color: white; width: 100%; }
+.btn-warning { background: #ff9800; color: white; }
+button:disabled { background: #ccc; cursor: not-allowed; }
+
+/* ADDED: Analytics Dashboard Styles */
+.analytics-section { background: #fff; border: 1px solid #eee; }
+.dashboard-container { display: flex; gap: 20px; flex-wrap: wrap; }
+.chart-container { flex: 2; min-width: 300px; background: white; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
+.stats-container { flex: 1; min-width: 200px; background: #2c3e50; color: white; padding: 20px; border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+#total-value { font-size: 2.5rem; font-weight: bold; margin-top: 10px; color: #4caf50; }
+
+/* Table Styles */
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+th { background-color: #f2f2f2; font-weight: 600; }
+.barcode-svg { max-width: 100px; height: auto; }
+.delete-btn { background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+
+/* ADDED: Edit Button Style */
+.edit-btn { background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; }
+.edit-btn:hover { background: #e68900; }
+
+/* Helper Styles */
+.list-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
+#search-input { flex: 1; min-width: 200px; }
+.empty-message { text-align: center; color: #777; margin-top: 20px; font-style: italic; }
