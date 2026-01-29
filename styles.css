@@ -1,23 +1,22 @@
-/* Basic Reset and Layout */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Tahoma, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px; }
+body { font-family: 'Segoe UI', Tahoma, sans-serif; line-height: 1.6; color: #333; background-color: #f4f4f4; padding: 20px; transition: background-color 0.3s, color 0.3s; }
 
-.container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
 header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
 section { margin-bottom: 30px; padding: 20px; background: #f9f9f9; border-radius: 5px; }
 h2 { margin-bottom: 15px; color: #2c3e50; }
 
-/* Scanner Styles */
+
 .qr-reader { width: 100%; max-width: 500px; margin: 0 auto 20px; min-height: 250px; background: #000; border-radius: 5px; }
 .scan-controls { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
 .scan-result { padding: 10px; background: #e8f5e9; border-left: 4px solid #4caf50; margin-top: 15px; display: none; }
 
-/* Form Styles */
+
 .form-group { margin-bottom: 15px; }
 label { display: block; margin-bottom: 5px; font-weight: 600; }
-input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; }
+input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 16px; transition: background-color 0.3s, color 0.3s; }
 
-/* Button Styles */
+
 .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: 600; transition: background 0.3s; }
 .btn-primary { background: #2196F3; color: white; }
 .btn-danger { background: #f44336; color: white; }
@@ -25,25 +24,128 @@ input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radiu
 .btn-warning { background: #ff9800; color: white; }
 button:disabled { background: #ccc; cursor: not-allowed; }
 
-/* ADDED: Analytics Dashboard Styles */
+
 .analytics-section { background: #fff; border: 1px solid #eee; }
 .dashboard-container { display: flex; gap: 20px; flex-wrap: wrap; }
 .chart-container { flex: 2; min-width: 300px; background: white; padding: 10px; border: 1px solid #eee; border-radius: 5px; }
 .stats-container { flex: 1; min-width: 200px; background: #2c3e50; color: white; padding: 20px; border-radius: 5px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
 #total-value { font-size: 2.5rem; font-weight: bold; margin-top: 10px; color: #4caf50; }
 
-/* Table Styles */
+
 table { width: 100%; border-collapse: collapse; margin-top: 15px; }
 th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
 th { background-color: #f2f2f2; font-weight: 600; }
 .barcode-svg { max-width: 100px; height: auto; }
 .delete-btn { background: #f44336; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
-
-/* ADDED: Edit Button Style */
 .edit-btn { background: #ff9800; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; margin-right: 5px; }
 .edit-btn:hover { background: #e68900; }
 
-/* Helper Styles */
+.low-stock {
+    background-color: #ffebee !important;
+    border-left: 5px solid #f44336;
+    color: #c62828;
+}
+
+
+.print-check { transform: scale(1.5); cursor: pointer; }
 .list-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
 #search-input { flex: 1; min-width: 200px; }
 .empty-message { text-align: center; color: #777; margin-top: 20px; font-style: italic; }
+
+
+body.dark-mode {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+body.dark-mode .container {
+    background: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode header {
+    border-bottom: 1px solid #333;
+    color: #ffffff;
+}
+
+body.dark-mode h2 {
+    color: #ffffff;
+}
+
+body.dark-mode section {
+    background: #2c2c2c;
+    border: 1px solid #333;
+}
+
+body.dark-mode .form-group label {
+    color: #bbb;
+}
+
+body.dark-mode input, 
+body.dark-mode select {
+    background-color: #333;
+    color: #ffffff;
+    border: 1px solid #555;
+}
+
+body.dark-mode table {
+    background-color: #1e1e1e;
+    color: #ffffff;
+}
+
+body.dark-mode th {
+    background-color: #444;
+    color: #ffffff;
+}
+
+body.dark-mode td {
+    border-bottom: 1px solid #444;
+}
+
+body.dark-mode .low-stock {
+    background-color: #5c1818 !important; 
+    color: #ffcdd2;
+}
+
+body.dark-mode .stats-container {
+    background: #0d47a1;
+}
+
+body.dark-mode .scan-result {
+    background-color: #1b5e20;
+    border-left-color: #4caf50;
+    color: #e8f5e9;
+}
+
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: 2px solid #2c3e50;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2c3e50;
+    z-index: 10;
+}
+
+body.dark-mode .theme-toggle {
+    border-color: #fff;
+    color: #fff;
+}
+
+
+@media print {
+    body * { visibility: hidden; }
+    #printable-area, #printable-area * { visibility: visible; position: absolute; left: 0; top: 0; width: 100%; }
+    .scan-section, .form-section, .analytics-section, .list-controls, h2, .delete-btn, .edit-btn, .print-check, .theme-toggle { display: none !important; }
+    body { background: white; }
+    .barcode-svg { filter: contrast(100%); -webkit-filter: contrast(100%); }
+}
