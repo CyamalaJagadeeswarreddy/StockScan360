@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StockScan360 - Smart Inventory Manager</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Import Libraries -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-    <!-- Chart.js for Analytics Dashboard -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -16,10 +14,10 @@
         <header>
             <h1>StockScan360</h1>
             <p>Smart Inventory & Barcode Manager</p>
+            <button id="theme-toggle" class="theme-toggle" title="Toggle Dark Mode">🌙</button>
         </header>
 
         <main>
-            <!-- SCANNING SECTION -->
             <section class="scan-section">
                 <h2>🔍 Scan to Add/Update</h2>
                 <div id="reader" class="qr-reader"></div>
@@ -30,7 +28,6 @@
                 <div id="scan-result" class="scan-result"></div>
             </section>
 
-            <!-- INPUT FORM SECTION -->
             <section class="form-section">
                 <h2>📦 Item Details</h2>
                 <form id="item-form">
@@ -45,6 +42,11 @@
                     <div class="form-group">
                         <label for="quantity">Quantity</label>
                         <input type="number" id="quantity" name="quantity" min="1" value="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reorder">Reorder Level (Alert Qty)</label>
+                        <input type="number" id="reorder" name="reorder" min="0" value="5" required placeholder="e.g. 5">
+                        <small style="color: #666; font-size: 12px;">Alert me when quantity drops below this number.</small>
                     </div>
                     <div class="form-group">
                         <label for="category">Category</label>
@@ -63,7 +65,7 @@
                 </form>
             </section>
 
-            <!-- ANALYTICS DASHBOARD SECTION -->
+           
             <section class="analytics-section">
                 <h2>📊 Analytics Dashboard</h2>
                 <div class="dashboard-container">
@@ -77,19 +79,25 @@
                 </div>
             </section>
 
-            <!-- INVENTORY LIST SECTION -->
-            <section class="list-section">
+           
+            <section id="printable-area" class="list-section">
                 <h2>📋 Current Inventory</h2>
                 <div class="list-controls">
                     <input type="text" id="search-input" placeholder="Search by name or barcode...">
                     <div>
-                        <button onclick="exportToCSV()" class="btn btn-primary" style="margin-right: 5px;">Export to Excel</button>
-                        <button id="clear-data-btn" class="btn btn-warning">Clear All Data</button>
+                       
+                        <input type="file" id="import-file" accept=".csv" style="display: none;">
+                        <button id="import-btn" class="btn btn-primary" style="margin-right: 5px;">Import CSV</button>
+                        
+                        <button onclick="printSelectedLabels()" class="btn btn-primary" style="margin-right: 5px;">Print Selected</button>
+                        <button id="clear-data-btn" class="btn btn-warning" style="margin-right: 5px;">Clear All</button>
+                        <button id="export-btn" class="btn btn-primary">Export CSV</button>
                     </div>
                 </div>
                 <table id="inventory-table">
                     <thead>
                         <tr>
+                            <th>Select</th> 
                             <th>Barcode</th>
                             <th>Name</th>
                             <th>Category</th>
@@ -100,7 +108,7 @@
                         </tr>
                     </thead>
                     <tbody id="inventory-body">
-                        <!-- Items will appear here via JavaScript -->
+                      
                     </tbody>
                 </table>
                 <p id="empty-message" class="empty-message">Inventory is empty. Scan an item to get started.</p>
@@ -108,7 +116,7 @@
         </main>
 
         <footer>
-            <p>&copy; 2026 StockScan360 - Pure HTML/JS Implementation</p>
+            <p>&copy; StockScan360</p>
         </footer>
     </div>
 
