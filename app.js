@@ -2,10 +2,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let html5QrcodeScanner = null;
     let isScanning = false;
     let editingIndex = null;
-    let inventoryChart = null; // To store the chart instance
-
+    let inventoryChart = null; 
     const inventory = JSON.parse(localStorage.getItem('stockScan360Inventory')) || [];
-
     const elements = {
         startScanBtn: document.getElementById('start-scan-btn'),
         stopScanBtn: document.getElementById('stop-scan-btn'),
@@ -16,18 +14,47 @@ document.addEventListener('DOMContentLoaded', () => {
         inventoryBody: document.getElementById('inventory-body'),
         searchInput: document.getElementById('search-input'),
         clearDataBtn: document.getElementById('clear-data-btn'),
-        emptyMessage: document.getElementById('empty-message')
+        emptyMessage: document.getElementById('empty-message'),
+        exportBtn: document.getElementById('export-btn'),
+        importBtn: document.getElementById('import-btn'),
+        importFile: document.getElementById('import-file')
     };
 
+   
+    const toggleBtn = document.getElementById('theme-toggle');
+    const body = document.body;
+
+    if (localStorage.getItem('theme') === 'dark') {
+        body.classList.add('dark-mode');
+        toggleBtn.textContent = '☀️';
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        body.classList.toggle('dark-mode');
+        
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark');
+            toggleBtn.textContent = '☀️';
+        } else {
+            localStorage.setItem('theme', 'light');
+            toggleBtn.textContent = '🌙';
+        }
+    });
+
+    
     renderInventory();
 
+    
     elements.startScanBtn.addEventListener('click', startScanning);
     elements.stopScanBtn.addEventListener('click', stopScanning);
     elements.itemForm.addEventListener('submit', handleFormSubmit);
     elements.searchInput.addEventListener('input', filterInventory);
     elements.clearDataBtn.addEventListener('click', clearAllData);
+    elements.exportBtn.addEventListener('click', exportToCSV);
+    elements.importBtn.addEventListener('click', () => elements.importFile.click());
+    elements.importFile.addEventListener('change', importFromCSV);
 
-    // --- SCANNING FUNCTIONS ---
+    
     function startScanning() {
         if (isScanning) return;
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -73,10 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function onScanFailure(error) {
-        // console.warn(`Scan error: ${error}`);
+        
     }
 
-    // --- FORM HANDLING (CREATE & UPDATE) ---
+    
     function handleFormSubmit(e) {
         e.preventDefault();
         
@@ -85,25 +112,27 @@ document.addEventListener('DOMContentLoaded', () => {
             name: document.getElementById('name').value.trim(),
             quantity: parseInt(document.getElementById('quantity').value),
             category: document.getElementById('category').value,
-            price: parseFloat(document.getElementById('price').value)
+            price: parseFloat(document.getElementById('price').value),
+            reorder: parseInt(document.getElementById('reorder').value)
         };
 
         if (editingIndex !== null) {
-            // UPDATE MODE
+           
             inventory[editingIndex] = formData;
-            editingIndex = null; // Reset edit mode
+            editingIndex = null; 
             elements.submitBtn.textContent = "Save to Inventory";
             elements.submitBtn.classList.remove('btn-warning');
             elements.submitBtn.classList.add('btn-success');
             alert('Item Updated Successfully!');
         } else {
-            // CREATE MODE
+            
             const existingItemIndex = inventory.findIndex(item => item.barcode === formData.barcode);
             if (existingItemIndex > -1) {
                 if (confirm(`Barcode ${formData.barcode} exists. Update quantity?`)) {
                     inventory[existingItemIndex].quantity += formData.quantity;
                     inventory[existingItemIndex].name = formData.name;
                     inventory[existingItemIndex].price = formData.price;
+                    inventory[existingItemIndex].reorder = formData.reorder;
                 } else { return; }
             } else {
                 inventory.push(formData);
@@ -117,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.barcodeInput.value = formData.barcode; 
     }
 
-    // --- RENDERING & ANALYTICS ---
+    
     function renderInventory(itemsToRender = inventory) {
         elements.inventoryBody.innerHTML = '';
         
@@ -130,13 +159,19 @@ document.addEventListener('DOMContentLoaded', () => {
         itemsToRender.forEach((item, index) => {
             const row = document.createElement('tr');
             
-            // Generate Barcode SVG
+            
+            if (item.quantity <= item.reorder) {
+                row.classList.add('low-stock');
+            }
+            
+            
             const barcodeSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
             JsBarcode(barcodeSvg, item.barcode, { format: "CODE128", width: 2, height: 40, displayValue: true });
             barcodeSvg.classList.add('barcode-svg');
 
-            // Create Row with Edit & Delete Buttons
+            
             row.innerHTML = `
+                <td><input type="checkbox" class="print-check"></td>
                 <td>${item.barcode}</td>
                 <td>${item.name}</td>
                 <td>${item.category}</td>
@@ -144,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>$${item.price.toFixed(2)}</td>
                 <td></td>
                 <td>
-                    <button class="edit-btn" data-index="${index}">Edit</button>
+                    <button class="edit-btn" data-barcode="${item.barcode}">Edit</button>
                     <button class="delete-btn" data-barcode="${item.barcode}">Delete</button>
                 </td>
             `;
@@ -153,26 +188,27 @@ document.addEventListener('DOMContentLoaded', () => {
             elements.inventoryBody.appendChild(row);
         });
 
-        // Attach Events to Buttons
+        
         document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function() { loadItemForEdit(parseInt(this.getAttribute('data-index'))); });
+            btn.addEventListener('click', function() { 
+                const barcode = this.getAttribute('data-barcode');
+                loadItemForEdit(barcode); 
+            });
         });
 
         document.querySelectorAll('.delete-btn').forEach(btn => {
             btn.addEventListener('click', function() { deleteItem(this.getAttribute('data-barcode')); });
         });
 
-        // ADDED: Update Analytics Dashboard
+        
         updateAnalytics();
     }
 
-    // --- ANALYTICS LOGIC ---
+    
     function updateAnalytics() {
-        // 1. Calculate Total Value
         const totalValue = inventory.reduce((acc, item) => acc + (item.price * item.quantity), 0);
         document.getElementById('total-value').innerText = `$${totalValue.toFixed(2)}`;
 
-        // 2. Prepare Data for Chart
         const categories = {};
         inventory.forEach(item => {
             categories[item.category] = (categories[item.category] || 0) + item.quantity;
@@ -180,12 +216,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const ctx = document.getElementById('categoryChart').getContext('2d');
         
-        // Destroy old chart if it exists to prevent overlap
         if (inventoryChart) {
             inventoryChart.destroy();
         }
 
-        // 3. Create New Chart
         inventoryChart = new Chart(ctx, {
             type: 'bar',
             data: {
@@ -205,27 +239,122 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- EDIT FUNCTION ---
-    function loadItemForEdit(index) {
-        const item = inventory[index];
+    
+    function loadItemForEdit(barcode) {
+        const item = inventory.find(i => i.barcode === barcode);
+        
+        if (!item) return;
+
         elements.barcodeInput.value = item.barcode;
         document.getElementById('name').value = item.name;
         document.getElementById('quantity').value = item.quantity;
         document.getElementById('category').value = item.category;
         document.getElementById('price').value = item.price;
+        document.getElementById('reorder').value = item.reorder;
 
-        editingIndex = index; // Set global edit mode
+        editingIndex = inventory.findIndex(i => i.barcode === barcode);
         
-        // Visual Feedback
         elements.submitBtn.textContent = "Update Item";
         elements.submitBtn.classList.remove('btn-success');
         elements.submitBtn.classList.add('btn-warning');
         
-        // Scroll to form
         document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // --- HELPER FUNCTIONS ---
+    
+    function exportToCSV() {
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Barcode,Name,Category,Quantity,Price\n";
+
+        inventory.forEach(item => {
+            const row = `"${item.barcode}","${item.name}","${item.category}",${item.quantity},${item.price}`;
+            csvContent += row + "\n";
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "stockscan360_inventory.csv");
+        document.body.appendChild(link); 
+        link.click();
+        document.body.removeChild(link);
+    }
+
+   
+    function importFromCSV(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const text = e.target.result;
+            const lines = text.split('\n');
+            let successCount = 0;
+
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                
+                const parts = line.split(',');
+                if (parts.length >= 5) {
+                    const barcode = parts[0].replace(/"/g, '').trim();
+                    const name = parts[1].replace(/"/g, '').trim();
+                    const category = parts[2].replace(/"/g, '').trim();
+                    const quantity = parseInt(parts[3]);
+                    const price = parseFloat(parts[4]);
+
+                    const existingIndex = inventory.findIndex(item => item.barcode === barcode);
+                    
+                    if (existingIndex > -1) {
+                        inventory[existingIndex] = { ...inventory[existingIndex], name, category, quantity, price };
+                    } else {
+                        inventory.push({ barcode, name, category, quantity, price, reorder: 5 });
+                    }
+                    successCount++;
+                }
+            }
+
+            saveInventory();
+            renderInventory();
+            alert(`Successfully imported ${successCount} items!`);
+            
+            // Clear input
+            event.target.value = '';
+        };
+
+        reader.readAsText(file);
+    }
+
+    
+    function printSelectedLabels() {
+        const checkboxes = document.querySelectorAll('.print-check:checked');
+        
+        if (checkboxes.length === 0) {
+            alert("Please select at least one item to print.");
+            return;
+        }
+
+        const allRows = document.querySelectorAll('#inventory-body tr');
+        allRows.forEach(row => {
+            const checkbox = row.querySelector('.print-check');
+            if (checkbox && !checkbox.checked) {
+                row.style.display = 'none';
+            } else {
+                row.style.display = '';
+            }
+        });
+
+        window.print();
+
+        setTimeout(() => {
+            allRows.forEach(row => row.style.display = '');
+        }, 1000);
+    }
+
+    
     function filterInventory() {
         const term = elements.searchInput.value.toLowerCase();
         const filtered = inventory.filter(item => 
@@ -257,27 +386,4 @@ document.addEventListener('DOMContentLoaded', () => {
     function saveInventory() {
         localStorage.setItem('stockScan360Inventory', JSON.stringify(inventory));
     }
-// --- NEW FUNCTION: Export to CSV ---
-function exportToCSV() {
-    // 1. Create the CSV headers
-    let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Barcode,Name,Category,Quantity,Price\n";
-
-    // 2. Loop through inventory and create rows
-    inventory.forEach(item => {
-        // We wrap text in quotes "..." in case a name has a comma (e.g., "Wireless, Mouse")
-        const row = `"${item.barcode}","${item.name}","${item.category}",${item.quantity},${item.price}`;
-        csvContent += row + "\n";
-    });
-
-    // 3. Create a temporary link to trigger download
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "stockscan360_inventory.csv");
-    
-    // 4. Trigger the download
-    document.body.appendChild(link); // Required for Firefox
-    link.click();
-    document.body.removeChild(link);
-}});
+});
